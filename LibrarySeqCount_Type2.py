@@ -4,24 +4,21 @@ Optional: Use of blast alignment algorithm to determine allow for partial matche
 
 import os,re
 from Bio import pairwise2
-import multiprocessing as mp
 
 class LibSeqCount:
 
     def __init__(self):
         self.MySeqList = list()
         self.barcode = str()
-        self.readrange = (100, 2500)  # length min and max of the read
+        self.readrange = (100, 20000)  # length min and max of the read
         self.results = list()
-        self.alignment_ref = "GTTTTAGAGCTAGAAATAGC"  # This is the gRNA scaffold that is used to control for false positives
+        self.alignment_ref = "GTTTTAGAGCTAGAAATAGCAAG"
 
     def import_seq_info(self):
-        f = open('/home/trinhlab/Downloads/StaphLibSeqs.txt')
+        f = open('/home/trinhlab/Desktop/SaccLibGroup1.txt')
         for line in f:
-            #self.MySeqList.append(line[:-1].split("\t")[1])
-            self.MySeqList.append(line[:-1])
+            self.MySeqList.append(line[:-1].split("\t")[1])
 
-    # Function for importing a fastq file and then identifying hits
     def import_fastq_data(self, file_directory, barcode, multi=False, use_alignment=False):
         os.chdir(file_directory + barcode)
         filestring = str()
@@ -31,20 +28,20 @@ class LibSeqCount:
                 for line in f:
                     filestring += line
                 f.close()
-        f = open(file_directory + "alignment_librarycalloutput_20ntstrict" + barcode + ".txt", 'w')
+        f = open(file_directory + "scaffold_alignment_librarycalloutput" + barcode + ".txt", 'w')
         for sequence in self.MySeqList:
             sequence = sequence.upper()
             count = 0
             if use_alignment:
-                seqcount = [m.start() for m in re.finditer(self.alignment_ref,filestring)]
+                seqcount = [m.start() for m in re.finditer(sequence, filestring)]
                 for match in seqcount:
-                    grnaseq = filestring[match-20:match]
-                    if pairwise2.align.globalxx(grnaseq,sequence,score_only=True) > 15:
+                    grnaseq = filestring[match+20:match+23]
+                    if pairwise2.align.globalxx(grnaseq, self.alignment_ref, score_only=True) > 19:
                         count += 1
-                revseqcount = [m.start() for m in re.finditer(self.revcom(self.alignment_ref),filestring)]
+                revseqcount = [m.start() for m in re.finditer(self.revcom(sequence), filestring)]
                 for match in revseqcount:
-                    grnaseq = filestring[match + len(self.alignment_ref):match + len(self.alignment_ref) + 20]
-                    if pairwise2.align.globalxx(grnaseq,sequence,score_only=True) > 15:
+                    grnaseq = filestring[match-23:match]
+                    if pairwise2.align.globalxx(grnaseq, self.alignment_ref, score_only=True) > 19:
                         count += 1
             else:
                 seqcount = re.finditer(sequence, filestring)
@@ -71,7 +68,6 @@ class LibSeqCount:
 
 L = LibSeqCount()
 L.import_seq_info()
-L.import_fastq_data("/home/trinhlab/Desktop/pCasSAlib/EcoLibExtract/fastq_pass/", "", use_alignment=True)
-"""barcodes = ["01","02","03","04","05","06","07","08","09","10","12"]
+barcodes = ["04","05","06"] #"02","03","04","05","06","07","08","09","10","12"]
 for num in barcodes:
-    L.import_fastq_data("/home/trinhlab/Desktop/StaphLibAmplicon/Barcoded/", "barcode" + num, use_alignment=True)"""
+    L.import_fastq_data("/home/trinhlab/Documents/SaccLibraryAmpliconFastQ/Barcodes/", "barcode" + num, use_alignment=True)
