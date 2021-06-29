@@ -10,12 +10,12 @@ class LibSeqCount:
     def __init__(self):
         self.MySeqList = list()
         self.barcode = str()
-        self.readrange = (100, 20000)  # length min and max of the read
+        self.readrange = (100, 2000)  # length min and max of the read
         self.results = list()
         self.alignment_ref = "GTTTTAGAGCTAGAAATAGCAAG"
 
     def import_seq_info(self):
-        f = open('/home/trinhlab/Desktop/SaccLibGroup1.txt')
+        f = open('/Users/brianmendoza/Desktop/CandidaLibGroup1.txt')
         for line in f:
             self.MySeqList.append(line[:-1].split("\t")[1])
 
@@ -34,6 +34,7 @@ class LibSeqCount:
             count = 0
             if use_alignment:
                 seqcount = [m.start() for m in re.finditer(sequence, filestring)]
+                print(seqcount)
                 for match in seqcount:
                     grnaseq = filestring[match+20:match+23]
                     if pairwise2.align.globalxx(grnaseq, self.alignment_ref, score_only=True) > 19:
@@ -68,6 +69,6 @@ class LibSeqCount:
 
 L = LibSeqCount()
 L.import_seq_info()
-barcodes = ["04","05","06"] #"02","03","04","05","06","07","08","09","10","12"]
+barcodes = ["07"] #"02","03","04","05","06","07","08","09","10","12"]
 for num in barcodes:
-    L.import_fastq_data("/home/trinhlab/Documents/SaccLibraryAmpliconFastQ/Barcodes/", "barcode" + num, use_alignment=True)
+    L.import_fastq_data("/Volumes/Lexar/fastq_pass/", "barcode" + num, use_alignment=True)

@@ -13,10 +13,10 @@ class LibSeqCount:
         self.barcode = str()
         self.readrange = (100, 2500)  # length min and max of the read
         self.results = list()
-        self.alignment_ref = "GTTTTAGAGCTAGAAATAGC"  # This is the gRNA scaffold that is used to control for false positives
+        self.alignment_ref = str()  # This is the gRNA scaffold that is used to control for false positives
 
-    def import_seq_info(self):
-        f = open('/home/trinhlab/Downloads/StaphLibSeqs.txt')
+    def import_seq_info(self,seqlistfile):
+        f = open(seqlistfile)
         for line in f:
             #self.MySeqList.append(line[:-1].split("\t")[1])
             self.MySeqList.append(line[:-1])
@@ -68,10 +68,9 @@ class LibSeqCount:
             revseq = rnt + revseq
         return revseq
 
-
 L = LibSeqCount()
-L.import_seq_info()
-L.import_fastq_data("/home/trinhlab/Desktop/pCasSAlib/EcoLibExtract/fastq_pass/", "", use_alignment=True)
-"""barcodes = ["01","02","03","04","05","06","07","08","09","10","12"]
+L.import_seq_info("/Volumes/Lexar/CalebILseqs.txt")
+#  L.import_fastq_data("/home/trinhlab/Desktop/pCasSAlib/EcoLibExtract/fastq_pass/", "", use_alignment=True)
+barcodes = ["01","02","03","04","05","06"]
 for num in barcodes:
-    L.import_fastq_data("/home/trinhlab/Desktop/StaphLibAmplicon/Barcoded/", "barcode" + num, use_alignment=True)"""
+    L.import_fastq_data("/Volumes/Lexar/fastq_pass/", "barcode" + num, use_alignment=True)
